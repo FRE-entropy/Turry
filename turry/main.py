@@ -2,7 +2,8 @@
 # @Time      :2025/3/1 下午1:29
 # @Author    :FRE量子计算机
 
-from utils.video_loader import load_video
+import torch
+from models.transformer import *
 
 
 class Config:

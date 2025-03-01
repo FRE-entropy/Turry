@@ -50,19 +50,23 @@ class FrameEncoder(nn.Module):
 
 
 # 3. 时间Transformer模型
-class VideoTransformer(nn.Module):
+class Transformer(nn.Module):
     def __init__(self, config, num_classes):
         super().__init__()
+        # 初始化位置编码层，用于给输入序列添加位置信息
         self.positional_encoding = PositionalEncoding(config.feature_dim, config.dropout)
 
+        # 创建一个Transformer编码器层，用于处理序列数据
         encoder_layer = nn.TransformerEncoderLayer(
-            d_model=config.feature_dim,
-            nhead=config.num_heads,
-            dropout=config.dropout,
-            batch_first=True
+            d_model=config.feature_dim,  # 输入和输出的特征维度
+            nhead=config.num_heads,     # 多头注意力机制的头数
+            dropout=config.dropout,     # Dropout比率，用于防止过拟合
+            batch_first=True            # 输入和输出的形状为(batch_size, seq_length, feature_dim)
         )
+        # 创建一个Transformer编码器，由多个编码器层堆叠而成
         self.transformer = nn.TransformerEncoder(encoder_layer, config.num_layers)
 
+        # 创建一个全连接层，用于将Transformer的输出映射到分类结果
         self.classifier = nn.Linear(config.feature_dim, num_classes)
 
     def forward(self, x):
