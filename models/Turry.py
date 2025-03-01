@@ -4,22 +4,22 @@
 
 import torch
 import torch.nn as nn
-from models.cnn import CNN
 from models.image_tokenize import ImageTokenize
+from models.text_tokenize import TextTokenize
 from models.transformer import MultiModalTransformer
 
 
 class Turry(nn.Module):
     def __init__(self):
         super().__init__()
-        self.cnn = CNN(3, 768, 16)
-        self.image_tokenize = ImageTokenize(768, 768)
+        self.image_tokenize = ImageTokenize()
+        self.text_tokenize = TextTokenize()
         self.transformer = MultiModalTransformer()
 
     def forward(self, image, text):
-        x = self.cnn(image)
-        x = self.image_tokenize(x)
-        x = self.transformer(x)
+        image_token = self.image_tokenize(image)
+        text_token = self.text_tokenize(text)
+        x = self.transformer(image_token, text_token, xxx)
         return x
 
 

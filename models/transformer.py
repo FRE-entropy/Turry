@@ -7,34 +7,9 @@ import torch.nn as nn
 
 
 class MultiModalTransformer(nn.Module):
-    def __init__(self):
+    def __init__(self, embed_dim=768, num_heads=12, num_layers=6, vocab_size=30522):
         super().__init__()
-        self.encoder = nn.TransformerEncoder(
-            nn.TransformerEncoderLayer(d_model=768, nhead=12),
-            num_layers=6
-        )
-        self.decoder = nn.TransformerDecoder(
-            nn.TransformerDecoderLayer(d_model=768, nhead=12),
-            num_layers=6
-        )
         self.modal_embed = nn.Embedding(2, 768)  # 0:图像, 1:文本
-        self.gate = nn.Linear(768, 2)  # 门控权重
-
-    def forward(self, img_tokens, text_tokens):
-        # 添加模态嵌入
-        img_tokens += self.modal_embed(torch.zeros(img_tokens.size(0), dtype=torch.int))
-        text_tokens += self.modal_embed(torch.ones(text_tokens.size(0), dtype=torch.int))
-        combined = torch.cat([img_tokens, text_tokens], dim=1)
-        # 编码器处理（带门控）
-        memory = self.encoder(combined)
-        gate_weights = torch.softmax(self.gate(memory), dim=-1)
-        memory = memory * gate_weights[:, :, 0].unsqueeze(-1)  # 图像门控
-        # 解码器生成
-        output = self.decoder(tgt=text_tokens, memory=memory)
-        return output
-class MultiModalTransformer(nn.Module):
-    def __init__(self, embed_dim=768, num_heads=12, num_layers=6):
-        super().__init__()
         # 编码器（处理图像+文本）
         self.encoder = nn.TransformerEncoder(
             nn.TransformerEncoderLayer(
@@ -57,6 +32,15 @@ class MultiModalTransformer(nn.Module):
         self.output_layer = nn.Linear(embed_dim, vocab_size)
 
     def forward(self, img_tokens, text_tokens, tgt_seq):
+        """
+        :param img_tokens:
+        :param text_tokens:
+        :param tgt_seq:
+        :return:
+        """
+        # 添加模态嵌入
+        img_tokens += self.modal_embed(torch.zeros(img_tokens.size(0), dtype=torch.int))
+        text_tokens += self.modal_embed(torch.ones(text_tokens.size(0), dtype=torch.int))
         # 拼接图像和文本Token
         combined = torch.cat([img_tokens, text_tokens], dim=1)  # [B, 196+seq_len, 768]
         # 编码器处理
@@ -69,6 +53,7 @@ class MultiModalTransformer(nn.Module):
         )
         logits = self.output_layer(output)
         return logits  # 输出: [B, tgt_seq_len, vocab_size]
+
 
 if __name__ == "__main__":
     pass
