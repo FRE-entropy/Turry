@@ -6,12 +6,13 @@
 import os
 import torch
 import torch.nn as nn
+import torchvision
 from torch.utils.data import Dataset, DataLoader
 from torch.optim import AdamW
 from torch.nn.utils import clip_grad_norm_
-from models import Turry
+from models.turry import Turry
 from transformers import BertTokenizer
-from
+from PIL import Image
 
 
 # ---------------------
