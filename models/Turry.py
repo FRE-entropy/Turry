@@ -12,12 +12,12 @@ from models.transformer import MultiModalTransformer
 class Turry(nn.Module):
     def __init__(self):
         super().__init__()
-        self.cnn = CNN()
-        self.image_tokenize = ImageTokenize()
+        self.cnn = CNN(3, 768, 16)
+        self.image_tokenize = ImageTokenize(768, 768)
         self.transformer = MultiModalTransformer()
 
-    def forward(self, x):
-        x = self.cnn(x)
+    def forward(self, image, text):
+        x = self.cnn(image)
         x = self.image_tokenize(x)
         x = self.transformer(x)
         return x
