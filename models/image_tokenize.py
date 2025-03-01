@@ -2,6 +2,10 @@
 # @Time      :2025/3/1 下午7:47
 # @Author    :FRE量子计算机
 
+import torch
+import torch.nn as nn
+
+
 class ImageTokenize(nn.Module):
     def __init__(self, in_dim=128, out_dim=768):
         super().__init__()

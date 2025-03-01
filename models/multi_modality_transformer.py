@@ -22,8 +22,8 @@ class MultiModalTransformer(nn.Module):
 
     def forward(self, img_tokens, text_tokens):
         # 添加模态嵌入
-        img_tokens += self.modal_embed(torch.zeros(img_tokens.size(0), dtype=int))
-        text_tokens += self.modal_embed(torch.ones(text_tokens.size(0), dtype=int))
+        img_tokens += self.modal_embed(torch.zeros(img_tokens.size(0), dtype=torch.int))
+        text_tokens += self.modal_embed(torch.ones(text_tokens.size(0), dtype=torch.int))
         combined = torch.cat([img_tokens, text_tokens], dim=1)
         # 编码器处理（带门控）
         memory = self.encoder(combined)
